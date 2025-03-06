@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="text-gray-400 bg-gray-900 body-font overflow-hidden">
+    <div class="container px-5 py-12 mx-auto">
+        <div class="lg:w-4/5 mx-auto flex flex-wrap">
+            <div class="lg:w-1/2 w-full lg:pr-8">
+                <h2 class="text-2xl font-bold text-white">{{ blog.title }}</h2>
+                <p class="text-gray-400 text-sm">{{ blog.published_date }}</p>
+                <p class="leading-relaxed my-3">{{ blog.description }}</p>
+                <a href="{% url 'home' %}" class="inline-block">
+                    <button class="text-white bg-indigo-500 py-2 px-5 rounded hover:bg-indigo-600 text-sm">Ortga</button>
+                </a>
+            </div>
+            <div class="lg:w-1/2 w-full">
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}" class="w-full h-60 object-cover rounded-lg">
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Izohlar bo‘limi -->
+<section class="bg-gray-800 text-gray-300 py-4">
+  <div class="container px-3 mx-auto">
+      <h2 class="text-base font-semibold mb-2">Izohlar</h2>
+      {% for comment in comments %}
+          <div class="mb-1 p-2 border border-gray-700 rounded-md text-xs">
+              <p class="text-gray-400"><b>{{ comment.username }}</b> - {{ comment.published_date }}</p>
+              <p>{{ comment.comment_text }}</p>
+          </div>
+      {% empty %}
+          <p class="text-xs">Hali hech qanday izoh yo‘q.</p>
+      {% endfor %}
+  </div>
+</section>
+
+<!-- Izoh qoldirish formasi -->
+{% if user.is_authenticated %}
+<section class="bg-gray-900 text-gray-300 py-4">
+  <div class="container px-3 mx-auto">
+      <h2 class="text-base font-semibold mb-2">Izoh qoldirish</h2>
+      <form method="post" class="bg-gray-800 p-2 rounded-md text-xs">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="text-white bg-indigo-500 py-1 px-3 rounded hover:bg-indigo-600">
+              Jo‘natish
+          </button>
+      </form>
+  </div>
+</section>
+{% else %}
+<p class="text-center text-gray-400 text-xs">Izoh qoldirish uchun <a href="{% url 'login' %}" class="text-indigo-400">tizimga kiring</a>.</p>
+{% endif %}
+{% endblock %}
