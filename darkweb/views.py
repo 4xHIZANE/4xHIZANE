@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
-from .forms import RegForm, LoginForm, BlogCommentForm
+from django.contrib.auth import login, logout
+from .forms import RegForm, LoginForm, BlogCommentForm, BlogForm
 from .models import Blog, Comments
-
+from django.shortcuts import render,get_object_or_404,redirect
+from . import models
+from . import forms
+from django.contrib.auth.decorators import login_required
+         
 
 
 def homepage(request):
@@ -56,3 +60,29 @@ def detail(request, id):
         form = BlogCommentForm()
 
     return render(request, 'detail.html', {'blog': blog, 'comments': comments, 'form': form})
+
+
+@login_required
+def create_post(request):
+    if request.method == 'POST':
+        form = BlogForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            return redirect('home')
+    else:
+        form = BlogForm()
+    return render(request, 'create_post.html', {'form': form})
+
+@login_required
+def update_post(request, id):
+    blog_post = get_object_or_404(Blog, id=id)
+    if blog_post.author != request.user:
+        return redirect('home')
+    form = BlogForm(request.POST or None, request.FILES or None, instance=blog_post)
+    if form.is_valid():
+        form.save()
+        return redirect('home')
+    return render(request, 'update_post.html', {'form': form, 'blog_post': blog_post})
+

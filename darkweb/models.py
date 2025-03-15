@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 
 class Blog(models.Model):
+    author = models.ForeignKey(User,on_delete=models.CASCADE)
     image = models.FileField(upload_to='images',verbose_name='foto : ')
     description = models.TextField(verbose_name='blog haqqinda : ')
     location = models.CharField(max_length=100,verbose_name='location : ')
